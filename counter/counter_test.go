@@ -73,3 +73,23 @@ func Test_wcounter_GetStats(t *testing.T) {
 	stats = testCounter.GetStats()
 	assert.Equal(t, 5, len(stats), "Statistics for new counter should be empty")
 }
+
+func Test_wcounter_processSpecial(t *testing.T) {
+	testCounter := wcounter{stats: map[byte]map[string][]int{}, wcount: 0}
+
+	result := testCounter.processSpecial("i'm")
+	assert.Equal(t, true, result, "Special processing expected")
+
+	result = testCounter.processSpecial("you're")
+	assert.Equal(t, true, result, "Special processing expected")
+
+	result = testCounter.processSpecial("test")
+	// no processing and no word added
+	assert.Equal(t, false, result, "No special processing expected")
+
+	result = testCounter.processSpecial("i.e.")
+	assert.Equal(t, true, result, "Special processing expected")
+
+	stats := testCounter.GetStats()
+	assert.Equal(t, 5, len(stats), "5 elements expected in statistics")
+}

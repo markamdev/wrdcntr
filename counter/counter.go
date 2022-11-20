@@ -47,9 +47,14 @@ func (w *wcounter) AddSentence(snt string) {
 	for _, prt := range parts {
 		// set letter to lowercase
 		currWord := strings.ToLower(prt)
-		// check if it's a special word
-		// trim all non-word characters
-		currWord = strings.Trim(currWord, ".,;:?!'")
+		// trim characters that are not expected to be in special words
+		currWord = strings.Trim(currWord, ",;:?!\"")
+		// check if it's a special word and process it only
+		if w.processSpecial(currWord) {
+			continue
+		}
+		// trim another non-word characters
+		currWord = strings.Trim(currWord, ".'")
 		// save word in stats
 		w.addWord(currWord)
 	}
@@ -111,4 +116,34 @@ func (w *wcounter) addWord(wrd string) {
 		// attach new sentence index at the end of existing slice
 		w.stats[idx][wrd] = append(wStat, (w.scount + 1))
 	}
+}
+
+// processSpecial process given word in special way if it's added to 'specialWords' and returns true
+// If given word is "not special" function returns false without any statistics modification
+func (w *wcounter) processSpecial(wrd string) bool {
+	newContent, ok := specialWords[wrd]
+	if !ok {
+		return false
+	}
+	for _, newWord := range newContent {
+		w.addWord(newWord)
+	}
+	return true
+}
+
+// specialWords contains words ar abbreviations that should be treated in special way:
+// - added to stats with dots like "mrs." or "mr."
+// - added to stats as mutliple words after expansion like "i am" instead of "i'm" and "you are" instead of you're
+var specialWords = map[string][]string{
+	"i'm":     {"i", "am"},
+	"you're":  {"you", "are"},
+	"he's":    {"he", "is"},
+	"she's":   {"she", "is"},
+	"it's":    {"is", "is"},
+	"we're":   {"we", "are"},
+	"they're": {"they", "are"},
+	"mrs.":    {"mrs."},
+	"mr.":     {"mrs."},
+	"i.e.":    {"i.e."},
+	"etc.":    {"etc."},
 }

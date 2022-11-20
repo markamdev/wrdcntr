@@ -17,8 +17,9 @@ func main() {
 	newCounter.AddSentence("This is a new sentence.")
 	newCounter.AddSentence("This is another new sentence.")
 	newCounter.AddSentence("This is some test string")
+	newCounter.AddSentence("I'm special sentence")
 
-	fmt.Println("Stats from counter with 3 sentences:")
+	fmt.Println("Stats from counter with 4 sentences:")
 	statsPrinter(newCounter.GetStats())
 }
 
