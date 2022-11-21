@@ -1,6 +1,7 @@
 package counter
 
 import (
+	"bufio"
 	"sort"
 	"strings"
 )
@@ -48,7 +49,7 @@ func (w *wcounter) AddSentence(snt string) {
 		// set letter to lowercase
 		currWord := strings.ToLower(prt)
 		// trim characters that are not expected to be in special words
-		currWord = strings.Trim(currWord, ",;:?!\"")
+		currWord = strings.Trim(currWord, ",;:?!\"\n\r")
 		// check if it's a special word and process it only
 		if w.processSpecial(currWord) {
 			continue
@@ -146,4 +147,55 @@ var specialWords = map[string][]string{
 	"mr.":     {"mrs."},
 	"i.e.":    {"i.e."},
 	"etc.":    {"etc."},
+}
+
+func SentenceSplitter(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	bufLen := len(data)
+
+	if bufLen == 0 {
+		// should not happen
+		if atEOF {
+			return 0, nil, bufio.ErrFinalToken
+		}
+		return 0, nil, bufio.ErrBadReadCount
+	}
+
+	var currIdx int
+	lastSpace := 0
+
+	for currIdx = 0; currIdx < bufLen; currIdx++ {
+		switch data[currIdx] {
+		case '!', '?', ';':
+			return currIdx, data[:currIdx], nil
+		case ' ':
+			lastSpace = currIdx
+		case '.':
+			if currIdx+1 == bufLen && atEOF {
+				// it's a finishing dot
+				return currIdx + 1, data, bufio.ErrFinalToken
+			}
+			if currIdx+1 == bufLen && !atEOF {
+				// more characters needed
+				return currIdx + 1, nil, nil
+			}
+			if data[currIdx+1] == '\n' {
+				// it's probably an end of sentence
+				return currIdx + 1, data[:currIdx+1], nil
+			}
+			if data[currIdx+1] == ' ' {
+				if _, ok := specialWords[string(data[lastSpace+1:currIdx])]; ok {
+					// it's one of special words with dot
+					continue
+				}
+				return currIdx + 1, data[:currIdx+1], nil
+			}
+		}
+	}
+
+	// not returned till now - check if it's not the final chunk:
+	if atEOF {
+		return bufLen, data, bufio.ErrFinalToken
+	}
+
+	return currIdx + 1, nil, nil
 }

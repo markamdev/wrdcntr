@@ -1,25 +1,51 @@
 package main
 
 import (
+	"bufio"
+	"flag"
 	"fmt"
+	"os"
 
 	"github.com/markamdev/wrdcntr/counter"
 )
 
 func main() {
-	fmt.Println("word occurence counter")
+	var fileName string
+	flag.StringVar(&fileName, "f", "", "path to input file")
+	flag.Parse()
 
-	// simple test code
+	// temp
+	fileName = "/home/markamdev/Development/arista-assignment/files/test_1.txt"
+
+	if len(fileName) == 0 {
+		fmt.Println("input file is a mandatory param")
+		flag.PrintDefaults()
+		return
+	}
+
+	fmt.Println("word occurence counter: reading from", fileName)
+
+	// open file and check if successfull
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println("error while opening file:", err)
+	}
+	defer file.Close()
+
+	// create new word counter instance
 	newCounter := counter.CreateCounter()
-	fmt.Println("Stats from empty counter:")
-	statsPrinter(newCounter.GetStats())
 
-	newCounter.AddSentence("This is a new sentence.")
-	newCounter.AddSentence("This is another new sentence.")
-	newCounter.AddSentence("This is some test string")
-	newCounter.AddSentence("I'm special sentence")
+	// create text file scanner
+	scanner := bufio.NewScanner(file)
+	scanner.Split(counter.SentenceSplitter)
 
-	fmt.Println("Stats from counter with 4 sentences:")
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) > 0 {
+			newCounter.AddSentence(line)
+		}
+	}
+
 	statsPrinter(newCounter.GetStats())
 }
 

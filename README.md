@@ -1,13 +1,13 @@
-# wrdcntr - simple word occurence counter with sentence indices saving
+# wrdcntr - simple word occurrence counter with sentence indices saving
 
 This application reads file given as an input param (command line flag) and counts number of occurencies of each word found.
 
 ## Application running
 
-To launch application with "~/some_file.txt" as input launch command below in main directory of this repo:
+To launch application with provided sample text as an input, launch command below in main directory of this repo:
 
 ```bash
-go run ./ -f ~/some_file.txt
+go run ./ -f files/test_1.txt
 ```
 
 ## Test running
@@ -26,5 +26,5 @@ The goal of this application is touching area of language processing. The NLP (N
 - application defines a list of special "words" that are processed in different way ("I'm" or "You're" are expanded to two words "I am" and "You are" respectively, "i.e." is stored in statistics as a one string with dots) - it is only a sample, not a full possible list
 - sentences are strings finished with one of the following characters:
 - - "." (dot) when not attached to special word/abbreviation
-- - "?", "!", ":" and ";"
+- - "?", "!", and ";"
 - - "\n" (newline)
