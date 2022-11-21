@@ -25,6 +25,7 @@ The goal of this application is touching area of language processing. The NLP (N
 - all words are processed in lower-character version only (including "I", "Mr." and so on)
 - application defines a list of special "words" that are processed in different way ("I'm" or "You're" are expanded to two words "I am" and "You are" respectively, "i.e." is stored in statistics as a one string with dots) - it is only a sample, not a full possible list
 - sentences are strings finished with one of the following characters:
-- - "." (dot) when not attached to special word/abbreviation
-- - "?", "!", and ";"
-- - "\n" (newline)
+  - "." (dot) when not attached to special word/abbreviation
+  - "?", "!", and ";"
+  - "\n" (newline)
+- empty lines (lines containing only newline character) are not counted

@@ -144,7 +144,7 @@ var specialWords = map[string][]string{
 	"we're":   {"we", "are"},
 	"they're": {"they", "are"},
 	"mrs.":    {"mrs."},
-	"mr.":     {"mrs."},
+	"mr.":     {"mr."},
 	"i.e.":    {"i.e."},
 	"etc.":    {"etc."},
 }
@@ -165,8 +165,8 @@ func SentenceSplitter(data []byte, atEOF bool) (advance int, token []byte, err e
 
 	for currIdx = 0; currIdx < bufLen; currIdx++ {
 		switch data[currIdx] {
-		case '!', '?', ';':
-			return currIdx, data[:currIdx], nil
+		case '!', '?', ';', '\n':
+			return currIdx + 1, data[:currIdx+1], nil
 		case ' ':
 			lastSpace = currIdx
 		case '.':
@@ -180,10 +180,11 @@ func SentenceSplitter(data []byte, atEOF bool) (advance int, token []byte, err e
 			}
 			if data[currIdx+1] == '\n' {
 				// it's probably an end of sentence
-				return currIdx + 1, data[:currIdx+1], nil
+				return currIdx + 2, data[:currIdx+2], nil
 			}
 			if data[currIdx+1] == ' ' {
-				if _, ok := specialWords[string(data[lastSpace+1:currIdx])]; ok {
+				currWord := strings.Trim(string(data[lastSpace:currIdx+1]), " ")
+				if _, ok := specialWords[strings.ToLower(currWord)]; ok {
 					// it's one of special words with dot
 					continue
 				}
