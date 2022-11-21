@@ -26,6 +26,7 @@ func main() {
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println("error while opening file:", err)
+		return
 	}
 	defer file.Close()
 

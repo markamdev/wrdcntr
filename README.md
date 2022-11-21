@@ -10,6 +10,8 @@ To launch application with provided sample text as an input, launch command belo
 go run ./ -f files/test_1.txt
 ```
 
+Some sample files for application can be found in _./files_ subfolder.
+
 ## Test running
 
 This project contains a set of unit tests for statistics collection object. These tests are written using default Go testing framework and can be launched using following command:
@@ -29,3 +31,4 @@ The goal of this application is touching area of language processing. The NLP (N
   - "?", "!", and ";"
   - "\n" (newline)
 - empty lines (lines containing only newline character) are not counted
+- application reads only standard ASCII files
